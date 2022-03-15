@@ -387,7 +387,7 @@ void GLWidget::updateProjection()
     m_projectionMatrix.setToIdentity();
 
     double asp = (double)width() / height();
-    m_projectionMatrix.frustum((-0.5 + m_xPan) * asp, (0.5 + m_xPan) * asp, -0.5 + m_yPan, 0.5 + m_yPan, 2, m_distance * 2);
+    m_projectionMatrix.ortho((-0.5 + m_xPan) * asp, (0.5 + m_xPan) * asp, -0.5 + m_yPan, 0.5 + m_yPan, 2, m_distance * 2);
 }
 
 void GLWidget::updateView()
@@ -545,14 +545,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *we)
 {
-    if (m_zoom > 0.1 && we->delta() < 0) {
+    auto delta = we->delta();
+    if (m_zoom > 0.001 && delta < 0) {
         m_xPan -= ((double)we->pos().x() / width() - 0.5 + m_xPan) * (1 - 1 / ZOOMSTEP);
         m_yPan += ((double)we->pos().y() / height() - 0.5 - m_yPan) * (1 - 1 / ZOOMSTEP);
 
         m_zoom /= ZOOMSTEP;
-    }
-    else if (m_zoom < 10 && we->delta() > 0)
-    {
+    } else if (m_zoom < 1000 && delta > 0) {
         m_xPan -= ((double)we->pos().x() / width() - 0.5 + m_xPan) * (1 - ZOOMSTEP);
         m_yPan += ((double)we->pos().y() / height() - 0.5 - m_yPan) * (1 - ZOOMSTEP);
 
